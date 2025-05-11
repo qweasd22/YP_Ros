@@ -1,0 +1,28 @@
+{% extends 'accounts/base.html' %}
+{% block title %}Заявка от {{ application.client.user.full_name }}{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    <h4 class="card-title">Заявка от {{ application.client.user.full_name }}</h4>
+    <p><strong>Цель:</strong> {{ application.goal }}</p>
+    
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="mb-3">
+        {{ form.status.label_tag }}<br>
+        {{ form.status }}
+        {% for err in form.status.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+      </div>
+      <div class="mb-3">
+        {{ form.reject_reason.label_tag }}
+        {{ form.reject_reason }}
+        {% for err in form.reject_reason.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+      </div>
+      <div class="d-grid">
+        <button class="btn btn-success" type="submit">Сохранить</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

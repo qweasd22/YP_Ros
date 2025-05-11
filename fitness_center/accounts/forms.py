@@ -1,0 +1,50 @@
+from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from .models import User
+
+class BootstrapFormMixin:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            css = 'form-control'
+            if isinstance(field.widget, forms.CheckboxInput):
+                css = 'form-check-input'
+            field.widget.attrs.update({
+                'class': css,
+                'placeholder': field.label,
+            })
+class RegisterForm(BootstrapFormMixin, UserCreationForm):
+    full_name = forms.CharField(label='ФИО', max_length=200)
+    phone = forms.CharField(label='Телефон', max_length=20)
+    birth_date = forms.DateField(
+        label='Дата рождения',
+        widget=forms.DateInput(attrs={'type': 'date'})
+    )
+    gender = forms.ChoiceField(
+        label='Пол',
+        choices=(('M','Мужской'), ('F','Женский')),
+        widget=forms.Select()
+    )
+    photo = forms.ImageField(label='Фото профиля', required=False)
+
+    class Meta:
+        model = User
+        fields = ('full_name', 'phone', 'birth_date', 'gender', 'photo', 'password1', 'password2')
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.full_name = self.cleaned_data['full_name']
+        user.phone = self.cleaned_data['phone']
+        user.birth_date = self.cleaned_data['birth_date']
+        user.gender = self.cleaned_data['gender']
+        if self.cleaned_data.get('photo'):
+            user.photo = self.cleaned_data['photo']
+        user.role = 'client'
+        if commit:
+            user.save()
+        return user
+
+
+class LoginForm(BootstrapFormMixin, forms.Form):
+    phone = forms.CharField(label='Телефон', max_length=20)
+    password = forms.CharField(label='Пароль', widget=forms.PasswordInput)

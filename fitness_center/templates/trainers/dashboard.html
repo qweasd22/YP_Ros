@@ -1,0 +1,16 @@
+{% extends 'accounts/base.html' %}
+{% block title %}Панель тренера — Fitness Center{% endblock %}
+{% block content %}
+<h2 class="mb-4">Новые заявки</h2>
+<ul class="list-group">
+  {% for app in applications %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      {{ app.client.user.full_name }}<br>
+      <small>{{ app.created_at|date:"d.m.Y H:i" }}</small>
+      <a href="{% url 'trainers:application_detail' app.pk %}" class="btn btn-sm btn-primary">Обработать</a>
+    </li>
+  {% empty %}
+    <li class="list-group-item">Нет новых заявок.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

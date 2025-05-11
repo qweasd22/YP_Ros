@@ -1,0 +1,31 @@
+{% extends 'accounts/base.html' %}
+{% block title %}Мой план — Fitness Center{% endblock %}
+{% block content %}
+<h2 class="mb-4">Мой текущий план</h2>
+{% if plan %}
+  <p><strong>Дата старта:</strong> {{ plan.start_date }}</p>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Упражнение</th>
+        <th>Частота/нед</th>
+        <th>Подходы</th>
+        <th>Повторы</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for pe in exercises %}
+        <tr>
+          <td>{{ pe.exercise.name }}</td>
+          <td>{{ pe.frequency_per_week }}</td>
+          <td>{{ pe.sets }}</td>
+          <td>{{ pe.repetitions }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <a href="{% url 'workouts:today_exercises' %}" class="btn btn-primary">Сегодняшние упражнения</a>
+{% else %}
+  <p>План пока не создан.</p>
+{% endif %}
+{% endblock %}

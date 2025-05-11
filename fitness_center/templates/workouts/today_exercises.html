@@ -1,0 +1,32 @@
+{% extends 'accounts/base.html' %}
+{% block title %}Упражнения на {{ today }} — Fitness Center{% endblock %}
+{% block content %}
+<h2 class="mb-4">Упражнения на {{ today|date:"d.m.Y" }}</h2>
+<form method="post" novalidate>
+  {% csrf_token %}
+  {{ formset.management_form }}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Упражнение</th>
+        <th>Выполнено</th>
+        <th>Пульс</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for form in formset %}
+        {% with log=form.instance %}
+        <tr>
+          <td>{{ log.exercise.name }}</td>
+          <td>{{ form.completed }}</td>
+          <td>{{ form.heart_rate }}</td>
+        </tr>
+        {% endwith %}
+      {% endfor %}
+    </tbody>
+  </table>
+  <div class="d-grid">
+    <button class="btn btn-success">Сохранить</button>
+  </div>
+</form>
+{% endblock %}
