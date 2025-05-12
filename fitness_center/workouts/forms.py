@@ -11,8 +11,16 @@ class DailyExerciseLogForm(forms.ModelForm):
         fields = ('completed', 'heart_rate')
 
 # Formset по упражнениям плана
+from django import forms
+from django.forms import modelformset_factory
+from workouts.models import DailyExerciseLog
+
 DailyLogFormSet = modelformset_factory(
     DailyExerciseLog,
-    form=DailyExerciseLogForm,
-    extra=0
+    fields=('completed', 'heart_rate',),
+    extra=0,
+    widgets={
+        'completed':  forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        'heart_rate': forms.NumberInput(attrs={'class': 'form-control', 'min': 30, 'max': 220}),
+    }
 )

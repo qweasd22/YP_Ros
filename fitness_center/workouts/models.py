@@ -2,13 +2,20 @@ from django.db import models
 from trainers.models import TrainingApplication
 from clients.models import ClientProfile
 
-class Exercise(models.Model):
+
+
+class ExerciseCategory(models.Model):
     name = models.CharField(max_length=100)
-    description = models.TextField(blank=True)
 
     def __str__(self):
         return self.name
+    
+class Exercise(models.Model):
+    name = models.CharField(max_length=100)
+    category = models.ForeignKey(ExerciseCategory, on_delete=models.SET_NULL, null=True, blank=True)
 
+    def __str__(self):
+        return self.name
 class TrainingPlan(models.Model):
     client = models.ForeignKey(ClientProfile, on_delete=models.CASCADE, related_name='plans')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -22,10 +29,13 @@ class PlanExercise(models.Model):
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
     frequency_per_week = models.PositiveSmallIntegerField()
     sets = models.PositiveSmallIntegerField()
-    repetitions = models.PositiveSmallIntegerField()
-
+    reps = models.PositiveIntegerField()
+    frequency_per_week = models.PositiveIntegerField() 
     class Meta:
         unique_together = ('plan', 'exercise')
+    def __str__(self):
+        return f"{self.exercise.name} ({self.sets}x{self.reps})"
+
 
 class DailyExerciseLog(models.Model):
     client = models.ForeignKey(ClientProfile, on_delete=models.CASCADE, related_name='logs')

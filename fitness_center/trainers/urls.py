@@ -5,6 +5,7 @@ app_name = 'trainers'
 
 urlpatterns = [
     path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
-    path('applications/<int:pk>/', views.ApplicationDetailView.as_view(), name='application_detail'),
-    path('applications/<int:pk>/plan/', views.PlanCreateView.as_view(), name='plan_create'),
+    path('applications/<int:pk>/accept/', views.AcceptApplicationView.as_view(), name='accept_application'),
+    path('clients/<int:pk>/create_plan/', views.PlanCreateView.as_view(), name='create_plan'),
+    path('statistics/', views.trainer_statistics, name='statistics'),
 ]

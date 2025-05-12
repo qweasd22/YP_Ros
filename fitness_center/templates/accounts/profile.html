@@ -1,0 +1,76 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+<div class="container">
+  <h2 class="mb-4">Личный кабинет</h2>
+
+  <!-- Форма пользователя -->
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        {{ user_form.full_name.label_tag }}
+        {{ user_form.full_name }}
+        {{ user_form.full_name.errors }}
+      </div>
+      <div class="col-md-6 mb-3">
+        {{ user_form.phone.label_tag }}
+        {{ user_form.phone }}
+        {{ user_form.phone.errors }}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        {{ user_form.birth_date.label_tag }}
+        {{ user_form.birth_date }}
+        {{ user_form.birth_date.errors }}
+      </div>
+      <div class="col-md-4 mb-3">
+        {{ user_form.gender.label_tag }}
+        {{ user_form.gender }}
+        {{ user_form.gender.errors }}
+      </div>
+      <div class="col-md-4 mb-3">
+        {{ user_form.photo.label_tag }}
+        {{ user_form.photo }}
+        {{ user_form.photo.errors }}
+        {% if request.user.photo %}
+          <img src="{{ request.user.photo.url }}" class="img-thumbnail mt-2" width="100">
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Профиль клиента: только для просмотра -->
+    {% if client_profile %}
+      <h4 class="mt-4">Мой тренер</h4>
+    {% if client_profile.trainer %}
+    <p>{{ client_profile.trainer.user.full_name }}</p>
+    {% else %}
+    <p><em>Тренер не назначен</em></p>
+    {% endif %}
+
+    <a href="{% url 'clients:change_trainer' %}" class="btn btn-outline-primary btn-sm mt-2">Сменить тренера</a>
+    <a href="{% url 'clients:my_applications' %}" class="btn btn-outline-primary">Мои заявки на смену тренера</a>
+      <h4 class="mt-4">Мой план</h4>
+      <h4 class="mt-3">Моя скидка</h4>
+      <p>{{ client_profile.discount }}%</p>
+    {% endif %}
+
+    <!-- Профиль тренера: редактируем -->
+    {% if trainer_form %}
+      <h4 class="mt-4">Профиль тренера</h4>
+      <div class="mb-3">
+        {{ trainer_form.experience_years.label_tag }}
+        {{ trainer_form.experience_years }}
+        {{ trainer_form.experience_years.errors }}
+      </div>
+      <div class="mb-3">
+        {{ trainer_form.achievements.label_tag }}
+        {{ trainer_form.achievements }}
+        {{ trainer_form.achievements.errors }}
+      </div>
+    {% endif %}
+
+    <button class="btn btn-success mt-3">Сохранить</button>
+  </form>
+</div>
+{% endblock %}

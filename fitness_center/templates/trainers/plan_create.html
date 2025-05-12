@@ -1,36 +1,36 @@
 {% extends 'accounts/base.html' %}
-{% block title %}Создать план для {{ application.client.user.full_name }}{% endblock %}
+{% block title %}Создать план — Fitness Center{% endblock %}
 {% block content %}
-<h3 class="mb-3">План тренировок для {{ application.client.user.full_name }}</h3>
+
+<h2 class="mb-4">Создать план для {{ client.user.full_name }}</h2>
+
 <form method="post">
   {% csrf_token %}
-  <div class="mb-3 row">
-    <label class="col-sm-2 col-form-label">{{ plan_form.start_date.label_tag }}</label>
-    <div class="col-sm-4">{{ plan_form.start_date }}</div>
-    {% for err in plan_form.start_date.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+  <div class="mb-3">
+    {{ plan_form.start_date.label_tag }}
+    {{ plan_form.start_date }}
   </div>
 
-  <h5>Упражнения</h5>
+  <h4>Упражнения</h4>
   {{ formset.management_form }}
-  {% for f in formset.forms %}
-    <div class="row g-2 mb-2 align-items-end">
-      <div class="col">
-        {{ f.exercise.label_tag }} {{ f.exercise }}
-      </div>
-      <div class="col">
-        {{ f.frequency_per_week.label_tag }} {{ f.frequency_per_week }}
-      </div>
-      <div class="col">
-        {{ f.sets.label_tag }} {{ f.sets }}
-      </div>
-      <div class="col">
-        {{ f.repetitions.label_tag }} {{ f.repetitions }}
-      </div>
+  {% for form in formset %}
+  <div class="card mb-3 p-3">
+    <div class="mb-2">
+      {{ form.exercise.label_tag }} {{ form.exercise }}
     </div>
-  {% endfor %}
-
-  <div class="d-grid">
-    <button class="btn btn-primary">Сохранить план</button>
+    <div class="mb-2">
+      {{ form.sets.label_tag }} {{ form.sets }}
+    </div>
+    <div class="mb-2">
+      {{ form.reps.label_tag }} {{ form.reps }}
+    </div>
+    <div class="mb-2">
+      {{ form.frequency_per_week.label_tag }} {{ form.frequency_per_week }}
+    </div>
   </div>
+{% endfor %}
+
+  <button type="submit" class="btn btn-success">Сохранить план</button>
 </form>
+
 {% endblock %}

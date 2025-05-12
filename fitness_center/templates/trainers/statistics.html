@@ -1,0 +1,41 @@
+{% extends 'accounts/base.html' %}
+{% block title %}Статистика клиентов{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Статистика ваших клиентов</h1>
+
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Клиент</th>
+      <th>Прогресс выполнения</th>
+      <th>Средний пульс</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for s in stats %}
+    <tr>
+      <td>{{ s.client }}</td>
+      <td>
+        <div class="progress">
+          <div 
+            class="progress-bar {% if s.completion >= 80 %}bg-success{% elif s.completion >= 50 %}bg-warning{% else %}bg-danger{% endif %}" 
+            role="progressbar" 
+            style="width: {{ s.completion }}%;" 
+            aria-valuenow="{{ s.completion }}" 
+            aria-valuemin="0" 
+            aria-valuemax="100">
+            {{ s.completion }}%
+          </div>
+        </div>
+      </td>
+      <td>{{ s.avg_pulse }} уд/мин</td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="3">Пока нет данных по клиентам.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

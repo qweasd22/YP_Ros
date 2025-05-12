@@ -1,0 +1,38 @@
+{% extends 'accounts/base.html' %}
+{% block title %}Прогресс{% endblock %}
+{% block content %}
+<h2>История прогресса</h2>
+<canvas id="doneChart" height="100"></canvas>
+<canvas id="pulseChart" height="100"></canvas>
+
+<script>
+fetch("{% url 'clients:progress_data' %}")
+  .then(response => response.json())
+  .then(data => {
+    new Chart(document.getElementById('doneChart'), {
+      type: 'line',
+      data: {
+        labels: data.labels,
+        datasets: [{
+          label: 'Выполнено упражнений',
+          data: data.done_counts,
+          borderColor: 'green',
+          fill: false
+        }]
+      }
+    });
+    new Chart(document.getElementById('pulseChart'), {
+      type: 'line',
+      data: {
+        labels: data.labels,
+        datasets: [{
+          label: 'Средний пульс',
+          data: data.pulses,
+          borderColor: 'blue',
+          fill: false
+        }]
+      }
+    });
+  });
+</script>
+{% endblock %}

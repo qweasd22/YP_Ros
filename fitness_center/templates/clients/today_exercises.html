@@ -1,0 +1,25 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+<h2 class="mb-4">Упражнения на {{ today|date:"d.m.Y" }}</h2>
+{% if no_plan %}
+  <div class="alert alert-warning">Нет активного плана.</div>
+{% else %}
+  <form method="post">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    <table class="table">
+      <thead><tr><th>Упражнение</th><th>✔ Выполнено</th><th>Пульс</th></tr></thead>
+      <tbody>
+        {% for form in formset %}
+          <tr>
+            <td>{{ form.instance.exercise.name }}</td>
+            <td>{{ form.completed }}</td>
+            <td>{{ form.heart_rate }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <button class="btn btn-success">Сохранить результаты</button>
+  </form>
+{% endif %}
+{% endblock %}

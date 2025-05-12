@@ -1,27 +1,24 @@
 {% extends 'accounts/base.html' %}
-{% block title %}Тренеры — Fitness Center{% endblock %}
 {% block content %}
-<h2 class="mb-4">Доступные тренеры</h2>
+<h2 class="mb-4">Выберите тренера</h2>
 <div class="row">
-  {% for trainer in trainers %}
+  {% for t in trainers %}
     <div class="col-md-4 mb-4">
-      <div class="card h-100 shadow-sm">
-        {% if trainer.user.photo %}
-          <img src="{{ trainer.user.photo.url }}" class="card-img-top" alt="Фото {{ trainer.user.full_name }}">
+      <div class="card h-100">
+        {% if t.user.photo %}
+          <img src="{{ t.user.photo.url }}" class="card-img-top" alt="">
         {% endif %}
         <div class="card-body d-flex flex-column">
-          <h5 class="card-title">{{ trainer.user.full_name }}</h5>
-          <p class="card-text">
-            Пол: {{ trainer.user.get_gender_display }}<br>
-            Стаж: {{ trainer.experience_years }} лет<br>
-            Достижения: {{ trainer.achievements|default:"—" }}
-          </p>
-          <a href="{% url 'clients:trainer_apply' trainer.pk %}" class="btn btn-primary mt-auto">Отправить заявку</a>
+          <h5>{{ t.user.full_name }}</h5>
+          <p>Стаж: {{ t.experience_years }} лет</p>
+          <form action="{% url 'clients:trainer_apply' t.pk %}" method="get" class="mt-auto">
+            <button class="btn btn-primary w-100">Отправить заявку</button>
+          </form>
         </div>
       </div>
     </div>
   {% empty %}
-    <p>Тренеры не найдены.</p>
+    <p>Нет доступных тренеров.</p>
   {% endfor %}
 </div>
 {% endblock %}

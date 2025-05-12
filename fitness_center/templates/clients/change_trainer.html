@@ -1,0 +1,25 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+<h2 class="mb-4">Сменить тренера</h2>
+
+{% if error %}
+  <div class="alert alert-warning">{{ error }}</div>
+{% endif %}
+
+{% if form %}
+<form method="post">{% csrf_token %}
+  <div class="mb-3">
+    {{ form.trainer.label_tag }}
+    {{ form.trainer }}
+    {{ form.trainer.errors }}
+  </div>
+  <div class="mb-3">
+    {{ form.goal.label_tag }}
+    {{ form.goal }}
+    {{ form.goal.errors }}
+  </div>
+  <button class="btn btn-primary">Отправить заявку</button>
+</form>
+{% endif %}
+
+{% endblock %}

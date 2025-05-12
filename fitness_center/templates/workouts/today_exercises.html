@@ -1,32 +1,35 @@
 {% extends 'accounts/base.html' %}
-{% block title %}Упражнения на {{ today }} — Fitness Center{% endblock %}
+{% block title %}Выполнение упражнений — Fitness Center{% endblock %}
 {% block content %}
-<h2 class="mb-4">Упражнения на {{ today|date:"d.m.Y" }}</h2>
-<form method="post" novalidate>
-  {% csrf_token %}
-  {{ formset.management_form }}
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Упражнение</th>
-        <th>Выполнено</th>
-        <th>Пульс</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for form in formset %}
-        {% with log=form.instance %}
+
+<h2 class="mb-4">Выполнение за {{ today|date:"d.m.Y" }}</h2>
+
+{% if no_plan %}
+  <div class="alert alert-info">На сегодня нет активного плана.</div>
+{% else %}
+  <form method="post">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    <table class="table table-striped">
+      <thead>
         <tr>
-          <td>{{ log.exercise.name }}</td>
-          <td>{{ form.completed }}</td>
-          <td>{{ form.heart_rate }}</td>
+          <th>Упражнение</th>
+          <th>Выполнено?</th>
+          <th>Пульс (после)</th>
         </tr>
-        {% endwith %}
-      {% endfor %}
-    </tbody>
-  </table>
-  <div class="d-grid">
-    <button class="btn btn-success">Сохранить</button>
-  </div>
-</form>
+      </thead>
+      <tbody>
+        {% for form in formset %}
+          <tr>
+            <td>{{ form.instance.exercise.name }}</td>
+            <td>{{ form.completed }}</td>
+            <td>{{ form.heart_rate }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <button type="submit" class="btn btn-primary">Сохранить выполнение</button>
+  </form>
+{% endif %}
+
 {% endblock %}

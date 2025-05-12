@@ -1,0 +1,45 @@
+{% extends 'accounts/base.html' %}
+{% block title %}Мои заявки {% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Мои заявки </h1>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Тренер</th>
+      <th>Цель</th>
+      <th>Статус</th>
+      <th>Дата заявки</th>
+      <th>Дата ответа</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for app in applications %}
+    <tr>
+      <td>{{ app.trainer.user.full_name }}</td>
+      <td>{{ app.goal }}</td>
+      <td>
+        {% if app.status == 'pending' %} 🕒 Ожидание
+        {% elif app.status == 'accepted' %} ✅ Принята
+        {% elif app.status == 'rejected' %} ❌ Отклонена
+        {% endif %}
+      </td>
+      <td>{{ app.created_at|date:"d.m.Y H:i" }}</td>
+      <td>
+        {% if app.responded_at %}
+          {{ app.responded_at|date:"d.m.Y H:i" }}
+        {% else %}
+          —
+        {% endif %}
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="5">Заявок пока нет.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

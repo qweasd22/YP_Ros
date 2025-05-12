@@ -1,3 +1,4 @@
+from datetime import date
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.views import View
@@ -42,3 +43,57 @@ class LoginView(View):
 def logout_view(request):
     logout(request)
     return redirect('home')
+
+from django.views import View
+from django.shortcuts import render, redirect
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .forms import UserForm, TrainerProfileForm
+from clients.models import ClientProfile
+from trainers.models import TrainerProfile
+from datetime import date
+
+class ProfileView(LoginRequiredMixin, View):
+    template_name = 'accounts/profile.html'
+
+    def get(self, request):
+        user = request.user
+        user_form = UserForm(instance=user)
+        trainer_form = None
+        client_profile = None
+
+        if user.role == 'trainer':
+            trainer_form = TrainerProfileForm(instance=getattr(user, 'trainerprofile', None))
+        elif user.role == 'client':
+            client_profile = getattr(user, 'clientprofile', None)
+
+        return render(request, self.template_name, {
+            'user_form': user_form,
+            'trainer_form': trainer_form,
+            'client_profile': client_profile,
+        })
+
+    def post(self, request):
+        user = request.user
+        user_form = UserForm(request.POST, request.FILES, instance=user)
+        saved = False
+
+        if user_form.is_valid():
+            user_form.save()
+            saved = True
+
+        if saved:
+            return redirect('accounts:profile')
+
+        # при ошибках показываем формы снова
+        trainer_form = None
+        client_profile = None
+        if user.role == 'trainer':
+            trainer_form = TrainerProfileForm(request.POST, instance=getattr(user, 'trainerprofile', None))
+        elif user.role == 'client':
+            client_profile = getattr(user, 'clientprofile', None)
+
+        return render(request, self.template_name, {
+            'user_form': user_form,
+            'trainer_form': trainer_form,
+            'client_profile': client_profile,
+        })

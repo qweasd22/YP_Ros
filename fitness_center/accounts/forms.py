@@ -48,3 +48,57 @@ class RegisterForm(BootstrapFormMixin, UserCreationForm):
 class LoginForm(BootstrapFormMixin, forms.Form):
     phone = forms.CharField(label='Телефон', max_length=20)
     password = forms.CharField(label='Пароль', widget=forms.PasswordInput)
+
+from django import forms
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('full_name', 'phone', 'birth_date', 'gender', 'photo')
+        widgets = {
+            'full_name':    forms.TextInput(attrs={'class': 'form-control'}),
+            'phone':        forms.TextInput(attrs={'class': 'form-control'}),
+            'birth_date':   forms.DateInput(attrs={'type':'date','class':'form-control'}),
+            'gender':       forms.Select(attrs={'class':'form-select'}),
+            'photo':        forms.ClearableFileInput(attrs={'class':'form-control'}),
+        }
+
+from django import forms
+from django.contrib.auth import get_user_model
+from clients.models import ClientProfile
+from trainers.models import TrainerProfile
+
+User = get_user_model()
+
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('full_name', 'phone', 'birth_date', 'gender', 'photo')
+        widgets = {
+            'full_name':  forms.TextInput(attrs={'class':'form-control'}),
+            'phone':      forms.TextInput(attrs={'class':'form-control'}),
+            'birth_date': forms.DateInput(attrs={'type':'date','class':'form-control'}),
+            'gender':     forms.Select(attrs={'class':'form-select'}),
+            'photo':      forms.ClearableFileInput(attrs={'class':'form-control'}),
+        }
+
+class ClientProfileForm(forms.ModelForm):
+    class Meta:
+        model = ClientProfile
+        fields = ('trainer', 'discount')
+        widgets = {
+            'trainer': forms.Select(attrs={'class':'form-select'}),
+            'discount': forms.NumberInput(attrs={'class':'form-control','step':'0.01','min':'0'}),
+        }
+
+class TrainerProfileForm(forms.ModelForm):
+    class Meta:
+        model = TrainerProfile
+        fields = ('experience_years', 'achievements')
+        widgets = {
+            'experience_years': forms.NumberInput(attrs={'class':'form-control','min':'0'}),
+            'achievements':     forms.Textarea(attrs={'class':'form-control','rows':3}),
+        }

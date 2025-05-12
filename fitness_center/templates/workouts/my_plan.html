@@ -1,14 +1,15 @@
 {% extends 'accounts/base.html' %}
-{% block title %}Мой план — Fitness Center{% endblock %}
+{% block title %}Мой план тренировок — Fitness Center{% endblock %}
 {% block content %}
-<h2 class="mb-4">Мой текущий план</h2>
+
+<h2 class="mb-4">Мой план тренировок</h2>
+
 {% if plan %}
-  <p><strong>Дата старта:</strong> {{ plan.start_date }}</p>
-  <table class="table">
+  <p><strong>Дата начала:</strong> {{ plan.start_date|date:"d.m.Y" }}</p>
+  <table class="table table-bordered">
     <thead>
       <tr>
         <th>Упражнение</th>
-        <th>Частота/нед</th>
         <th>Подходы</th>
         <th>Повторы</th>
       </tr>
@@ -17,15 +18,15 @@
       {% for pe in exercises %}
         <tr>
           <td>{{ pe.exercise.name }}</td>
-          <td>{{ pe.frequency_per_week }}</td>
           <td>{{ pe.sets }}</td>
-          <td>{{ pe.repetitions }}</td>
+          <td>{{ pe.reps }}</td>
         </tr>
       {% endfor %}
     </tbody>
   </table>
-  <a href="{% url 'workouts:today_exercises' %}" class="btn btn-primary">Сегодняшние упражнения</a>
+  <a href="{% url 'workouts:today_exercises' %}" class="btn btn-success">Отметить выполнение за сегодня</a>
 {% else %}
-  <p>План пока не создан.</p>
+  <div class="alert alert-warning">План ещё не назначен.</div>
 {% endif %}
+
 {% endblock %}

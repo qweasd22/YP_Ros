@@ -8,8 +8,8 @@
       <th>Тренер</th>
       <th>Цель</th>
       <th>Статус</th>
-      <th>Причина отказа</th>
       <th>Дата</th>
+      <th>Ожидание</th>
     </tr>
   </thead>
   <tbody>
@@ -19,18 +19,24 @@
         <td>{{ app.goal }}</td>
         <td>
           {% if app.status == 'pending' %}
-            <span class="badge bg-warning text-dark">В ожидании</span>
+            <span class="badge bg-warning">В ожидании</span>
           {% elif app.status == 'accepted' %}
             <span class="badge bg-success">Принята</span>
           {% else %}
             <span class="badge bg-danger">Отклонена</span>
           {% endif %}
         </td>
-        <td>{{ app.reject_reason|default:"—" }}</td>
-        <td>{{ app.created_at|date:"d.m.Y H:i" }}</td>
+        <td>{{ app.created_at|date:"d.m.Y" }}</td>
+        <td>
+          {% if app.status == 'pending' %}
+            {{ app.days_waiting }} дн.
+          {% else %}
+            —
+          {% endif %}
+        </td>
       </tr>
     {% empty %}
-      <tr><td colspan="5">Заявок пока нет.</td></tr>
+      <tr><td colspan="5">Заявок нет.</td></tr>
     {% endfor %}
   </tbody>
 </table>

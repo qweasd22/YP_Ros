@@ -1,16 +1,50 @@
 {% extends 'accounts/base.html' %}
 {% block title %}Панель тренера — Fitness Center{% endblock %}
 {% block content %}
+
 <h2 class="mb-4">Новые заявки</h2>
-<ul class="list-group">
-  {% for app in applications %}
+<ul class="list-group mb-5">
+  {% for app in pending_apps %}
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      {{ app.client.user.full_name }}<br>
-      <small>{{ app.created_at|date:"d.m.Y H:i" }}</small>
-      <a href="{% url 'trainers:application_detail' app.pk %}" class="btn btn-sm btn-primary">Обработать</a>
+      <div>
+        <strong>{{ app.client.user.full_name }}</strong> — {{ app.goal }}<br>
+        <small>{{ app.created_at|date:"d.m.Y H:i" }}</small>
+      </div>
+      <form action="{% url 'trainers:accept_application' app.pk %}" method="post" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-success">Принять</button>
+      </form>
     </li>
   {% empty %}
     <li class="list-group-item">Нет новых заявок.</li>
   {% endfor %}
 </ul>
+
+<h2 class="mb-4">Клиенты с планами</h2>
+<div class="row">
+  {% for client in clients_with_apps %}
+    <div class="col-md-6 mb-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">{{ client.user.full_name }}</h5>
+          {% with plan=client.plans.last %}
+            {% if plan %}
+              <p>План от {{ plan.start_date|date:"d.m.Y" }}</p>
+              <a href="{% url 'trainers:create_plan' client.pk %}" class="btn btn-primary btn-sm">
+                Изменить план
+              </a>
+            {% else %}
+              <a href="{% url 'trainers:create_plan' client.pk %}" class="btn btn-primary btn-sm">
+                Создать план
+              </a>
+            {% endif %}
+          {% endwith %}
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <p>Нет клиентов с принятыми заявками.</p>
+  {% endfor %}
+</div>
+
 {% endblock %}

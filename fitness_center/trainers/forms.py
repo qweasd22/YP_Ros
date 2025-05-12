@@ -21,21 +21,14 @@ class ApplicationActionForm(forms.ModelForm):
 
 
 class TrainingPlanForm(forms.ModelForm):
-    start_date = forms.DateField(widget=forms.DateInput(attrs={'type':'date'}))
-
     class Meta:
         model = TrainingPlan
-        fields = ('start_date',)
+        fields = ['start_date']
 
-# набор упражнений внутри плана
 PlanExerciseFormSet = inlineformset_factory(
-    TrainingPlan, PlanExercise,
-    fields=('exercise','frequency_per_week','sets','repetitions'),
-    extra=3, can_delete=False,
-    widgets={
-      'exercise': forms.Select(),
-      'frequency_per_week': forms.NumberInput(attrs={'min':1}),
-      'sets': forms.NumberInput(attrs={'min':1}),
-      'repetitions': forms.NumberInput(attrs={'min':1}),
-    }
+    TrainingPlan,
+    PlanExercise,
+    fields=['exercise', 'sets', 'reps','frequency_per_week'],
+    extra=5,
+    can_delete=False
 )

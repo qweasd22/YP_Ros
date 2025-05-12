@@ -1,0 +1,82 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+
+<h2 class="mb-4">План тренировок</h2>
+
+<ul class="nav nav-tabs" id="planTabs" role="tablist">
+  <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#full">Весь план</button></li>
+  <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#today">Сегодня — {{ today|date:"d.m.Y" }}</button></li>
+</ul>
+
+<div class="tab-content mt-3">
+  <!-- Весь план -->
+  <div class="tab-pane fade show active" id="full">
+    {% if plan_exists %}
+      <table class="table table-bordered">
+        <thead><tr><th>Упр.</th><th>Частота/нед.</th><th>Подходы</th><th>Повторы</th></tr></thead>
+        <tbody>
+          {% for item in full_plan %}
+          <tr>
+            <td>{{ item.exercise }}</td>
+            <td>{{ item.frequency }}</td>
+            <td>{{ item.sets }}</td>
+            <td>{{ item.reps }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="alert alert-info">План ещё не назначен.</div>
+    {% endif %}
+  </div>
+
+  <!-- Сегодня -->
+  <div class="tab-pane fade" id="today">
+    {% if plan_exists %}
+      <div class="mb-3">
+        <h5>Прогресс: {{ today_percent }}%</h5>
+        <div class="progress">
+          <div class="progress-bar bg-success" style="width: {{ today_percent }}%;">{{ today_percent }}%</div>
+        </div>
+      </div>
+      <canvas id="todayChart" width="200" height="200"></canvas>
+
+      <form method="post" class="mt-4">
+        {% csrf_token %}
+        <table class="table table-striped">
+          <thead><tr><th>Упр.</th><th>Подходы×Повторы</th><th>✔</th><th>Пульс</th></tr></thead>
+          <tbody>
+            {% for log in logs %}
+            <tr>
+              <td>{{ log.exercise }}</td>
+              <td>{{ log.sets }}×{{ log.reps }}</td>
+              <td><input type="checkbox" name="completed_{{ log.id }}" {% if log.completed %}checked{% endif %}></td>
+              <td><input type="number" name="heart_rate_{{ log.id }}" class="form-control" value="{{ log.heart_rate }}"></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <button class="btn btn-primary">Сохранить выполнение</button>
+      </form>
+
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <script>
+        document.addEventListener('DOMContentLoaded', function(){
+          new Chart(document.getElementById('todayChart').getContext('2d'), {
+            type: 'doughnut',
+            data: {
+              labels: ['Выполнено','Осталось'],
+              datasets:[{ data:[{{ today_percent }},{{ remaining_percent }}], backgroundColor:['#28a745','#dc3545'] }]
+            },
+            options:{ cutout:'70%', plugins:{legend:{position:'bottom'}} }
+          });
+        });
+      </script>
+
+    {% else %}
+      <div class="alert alert-warning">Нет активного плана на сегодня.</div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}
