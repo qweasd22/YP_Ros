@@ -10,6 +10,38 @@ from datetime import date
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from trainers.models import TrainingApplication
+from django.views import View
+from django.shortcuts import render, redirect
+from django.contrib.auth.mixins import LoginRequiredMixin
+from datetime import date
+
+from workouts.models import DailyExerciseLog, PlanExercise
+
+class MyPlanView(LoginRequiredMixin, View):
+    template_name = 'clients/my_plan.html'
+
+    def get(self, request):
+        logs = DailyExerciseLog.objects.filter(
+            client=request.user.clientprofile,
+            date=date.today()
+        ).select_related('exercise')
+        return render(request, self.template_name, {
+            'logs': logs
+        })
+
+class SaveProgressView(LoginRequiredMixin, View):
+    def post(self, request):
+        logs = DailyExerciseLog.objects.filter(
+            client=request.user.clientprofile,
+            date=date.today()
+        )
+        for log in logs:
+            completed = request.POST.get(f'completed_{log.id}') == 'on'
+            heart_rate = request.POST.get(f'heart_rate_{log.id}')
+            log.completed = completed
+            log.heart_rate = heart_rate if heart_rate else None
+            log.save()
+        return redirect('clients:my_plan')
 
 @login_required
 def my_applications(request):

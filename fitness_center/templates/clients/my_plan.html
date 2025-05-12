@@ -1,22 +1,32 @@
 {% extends 'accounts/base.html' %}
+{% block title %}Мой план{% endblock %}
 {% block content %}
-<h2 class="mb-4">Мой план</h2>
-{% if plan %}
-  <p>Начало: {{ plan.start_date|date:"d.m.Y" }}</p>
-  <table class="table table-bordered">
-    <thead><tr><th>Упражнение</th><th>Подходы</th><th>Повторы</th></tr></thead>
+<h1>Сегодняшние упражнения</h1>
+
+<form method="post" action="{% url 'clients:save_progress' %}">
+  {% csrf_token %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Упражнение</th>
+        <th>✔</th>
+        <th>Пульс</th>
+      </tr>
+    </thead>
     <tbody>
-      {% for pe in exercises %}
-        <tr>
-          <td>{{ pe.exercise.name }}</td>
-          <td>{{ pe.frequency_per_week }}</td>
-          <td>{{ pe.sets }}×{{ pe.reps }}</td>
-        </tr>
+      {% for log in logs %}
+      <tr>
+        <td>{{ log.exercise.name }}</td>
+        <td>
+          <input type="checkbox" name="completed_{{ log.id }}" {% if log.completed %}checked{% endif %}>
+        </td>
+        <td>
+          <input type="number" name="heart_rate_{{ log.id }}" value="{{ log.heart_rate }}" class="form-control" min="40" max="220">
+        </td>
+      </tr>
       {% endfor %}
     </tbody>
   </table>
-  <a href="{% url 'clients:today_exercises' %}" class="btn btn-primary">Выполнить сегодня</a>
-{% else %}
-  <div class="alert alert-info">План ещё не назначен.</div>
-{% endif %}
+  <button type="submit" class="btn btn-primary">Сохранить</button>
+</form>
 {% endblock %}

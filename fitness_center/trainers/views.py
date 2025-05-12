@@ -88,6 +88,19 @@ class PlanCreateView(LoginRequiredMixin, View):
             'plan_form': plan_form,
             'formset': formset
         })
+    def _generate_logs(self, plan):
+        exercises = plan.plan_exercises.all()
+        current_date = plan.start_date
+        days_count = 30  # План на 30 дней вперёд
+
+        for day_offset in range(days_count):
+            day = current_date + timedelta(days=day_offset)
+            for ex in exercises:
+                DailyExerciseLog.objects.get_or_create(
+                    client=plan.client,
+                    date=day,
+                    exercise=ex.exercise,
+                )
 
 
 from django.utils import timezone
@@ -130,33 +143,38 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Avg, Q
 from workouts.models import TrainingPlan, DailyExerciseLog
 
+from django.db.models import Count, Q, Avg
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from clients.models import ClientProfile
+from workouts.models import DailyExerciseLog
+
 @login_required
 def trainer_statistics(request):
     trainer = request.user.trainerprofile
 
-    # Все клиенты тренера
-    clients = trainer.applications.filter(status='accepted').values_list('client', flat=True)
-
-    # Все планы этих клиентов
-    plans = TrainingPlan.objects.filter(client__user__id__in=clients)
+    # Все клиенты этого тренера
+    clients = ClientProfile.objects.filter(trainer=trainer)
 
     stats = []
-    for plan in plans:
-        client_name = plan.client.user.full_name
-        total_logs = DailyExerciseLog.objects.filter(client=plan.client).count()
-        completed_logs = DailyExerciseLog.objects.filter(client=plan.client, completed=True).count()
-        avg_pulse = DailyExerciseLog.objects.filter(client=plan.client, heart_rate__isnull=False).aggregate(Avg('heart_rate'))['heart_rate__avg'] or 0
+    for client in clients:
+        logs = DailyExerciseLog.objects.filter(client=client)
 
-        if total_logs:
-            completion_percent = round(completed_logs / total_logs * 100, 1)
-        else:
-            completion_percent = 0
+        total_logs = logs.count()
+        completed_logs = logs.filter(completed=True).count()
+
+        percent_completed = (completed_logs / total_logs * 100) if total_logs else 0
+
+        avg_pulse = logs.filter(heart_rate__isnull=False).aggregate(Avg('heart_rate'))['heart_rate__avg'] or 0
 
         stats.append({
-            'client': client_name,
-            'completion': completion_percent,
+            'client': client,
+            'percent_completed': round(percent_completed, 1),
             'avg_pulse': round(avg_pulse, 1),
         })
 
-    return render(request, 'trainers/statistics.html', {'stats': stats})
+    return render(request, 'trainers/statistics.html', {
+        'stats': stats
+    })
+
 

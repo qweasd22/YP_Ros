@@ -10,5 +10,7 @@ urlpatterns = [
     path('plan/', views.PlanTabView.as_view(), name='plan_tabs'),
     path('change_trainer/', views.change_trainer, name='change_trainer'),
     path('my_applications/', views.my_applications, name='my_applications'),
+    path('my-plan/', views.MyPlanView.as_view(), name='my_plan'),
+    path('save-progress/', views.SaveProgressView.as_view(), name='save_progress'),
     
 ]
